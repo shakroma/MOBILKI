@@ -13,13 +13,12 @@ public class ActivityViewPagerAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) return new WorkoutsFragment();
-        else if (position == 1) return new StatsFragment();
-        else if (position == 2) return new UsersFragment();
+        else if (position == 1) return new UsersFragment();
         else throw new IllegalArgumentException();
     }
 
     @Override
     public int getItemCount() {
-        return 3;
+        return 2;
     }
 } 

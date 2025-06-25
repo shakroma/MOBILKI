@@ -21,6 +21,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".ActivityDetailsActivity" android:exported="false" android:theme="@style/Theme.ActivityDetails.NoActionBar" />
+        <activity android:name=".NewActivityStartActivity" android:exported="false" />
+        <activity android:name=".ActivityChangePassword" android:exported="false" />
+        <activity android:name=".NewActivityTrackingActivity" android:exported="false" />
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="YOUR_API_KEY_HERE" />
     </application>
 
 </manifest>

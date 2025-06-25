@@ -1,7 +1,7 @@
 package com.example.myapplication1;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +14,12 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        TextView textView = new TextView(requireContext());
-        textView.setText("Экран профиля");
-        textView.setGravity(Gravity.CENTER);
-        textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        return textView;
+        View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        TextView tvChangePassword = view.findViewById(R.id.tvChangePassword);
+        tvChangePassword.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), ActivityChangePassword.class);
+            startActivity(intent);
+        });
+        return view;
     }
 } 

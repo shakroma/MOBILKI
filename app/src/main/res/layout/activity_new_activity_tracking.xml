@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <!-- Заглушка под карту -->
+    <View
+        android:id="@+id/mapStub"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#E0E0E0" />
+
+    <!-- Карточка с инфой и кнопками -->
+    <LinearLayout
+        android:orientation="vertical"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical">
+            <TextView
+                android:id="@+id/tvType"
+                android:text="Велосипед"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/tvDistance"
+                android:text="14 км"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"/>
+            <TextView
+                android:id="@+id/tvTime"
+                android:text="00:01:46"
+                android:textSize="16sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="24dp">
+            <ImageButton
+                android:id="@+id/btnPause"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:backgroundTint="#E0E0E0"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_media_pause"
+                android:tint="#4B32C3"/>
+            <ImageButton
+                android:id="@+id/btnFinish"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:backgroundTint="#E0E0E0"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:tint="#4B32C3"
+                android:layout_marginStart="24dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout> 
