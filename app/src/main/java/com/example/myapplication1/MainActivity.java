@@ -1,37 +1,66 @@
 package com.example.myapplication1;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-
-import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.Fragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
-        Button loginButton = findViewById(R.id.loginButton);
-        Button registerButton = findViewById(R.id.registerButton);
+        bottomNav = findViewById(R.id.bottom_nav);
 
-        loginButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, LoginActivity.class));
-        });
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, new ActivityFragment(), "activity_fragment")
+                    .commit();
+        }
 
-        registerButton.setOnClickListener(v -> {
-            startActivity(new Intent(this, RegisterActivity.class));
+        bottomNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if (item.getItemId() == R.id.nav_activity) {
+                    showActivityFragment();
+                } else if (item.getItemId() == R.id.nav_profile) {
+                    showProfileFragment();
+                }
+                return true;
+            }
         });
+    }
+
+    private void showActivityFragment() {
+        Fragment activityFragment = getSupportFragmentManager().findFragmentByTag("activity_fragment");
+        Fragment profileFragment = getSupportFragmentManager().findFragmentByTag("profile_fragment");
+
+        androidx.fragment.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (profileFragment != null) transaction.hide(profileFragment);
+        if (activityFragment == null) {
+            transaction.add(R.id.fragment_container, new ActivityFragment(), "activity_fragment");
+        } else {
+            transaction.show(activityFragment);
+        }
+        transaction.commit();
+    }
+
+    private void showProfileFragment() {
+        Fragment activityFragment = getSupportFragmentManager().findFragmentByTag("activity_fragment");
+        Fragment profileFragment = getSupportFragmentManager().findFragmentByTag("profile_fragment");
+
+        androidx.fragment.app.FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (activityFragment != null) transaction.hide(activityFragment);
+        if (profileFragment == null) {
+            transaction.add(R.id.fragment_container, new ProfileFragment(), "profile_fragment");
+        } else {
+            transaction.show(profileFragment);
+        }
+        transaction.commit();
     }
 }
