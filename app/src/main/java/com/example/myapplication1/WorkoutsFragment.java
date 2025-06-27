@@ -9,39 +9,34 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class WorkoutsFragment extends Fragment {
     private static final int VIEW_TYPE_SECTION = 0;
     private static final int VIEW_TYPE_ACTIVITY = 1;
+
+    private ActivityViewModel viewModel;
+    private ActivityAdapter adapter;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         RecyclerView recyclerView = new RecyclerView(requireContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        adapter = new ActivityAdapter(new ArrayList<>());
+        recyclerView.setAdapter(adapter);
 
-        // Пример данных
-        List<ActivityListItem> items = new ArrayList<>();
-        items.add(new DateSectionItem("Вчера"));
-        items.add(new ActivityItem("14.32 км", "2 часа 46 минут", "Серфинг 🏄‍♂️", "14 часов назад"));
-        items.add(new DateSectionItem("Май 2022 года"));
-        items.add(new ActivityItem("1 000 м", "60 минут", "Велосипед 🚴", "29.05.2022"));
+        viewModel = new ViewModelProvider(this).get(ActivityViewModel.class);
+        viewModel.getAllActivities().observe(getViewLifecycleOwner(), activities -> {
+            adapter.setItems(activities);
+        });
 
-        if (items.isEmpty()) {
-            TextView emptyView = new TextView(requireContext());
-            emptyView.setText("Время потренить\nНажимай на кнопку ниже и начинаем трекать активность");
-            emptyView.setGravity(android.view.Gravity.CENTER);
-            emptyView.setTextSize(18);
-            emptyView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            return emptyView;
-        } else {
-            recyclerView.setAdapter(new ActivityAdapter(items));
-            return recyclerView;
-        }
+        return recyclerView;
     }
 
     // --- Модели ---
@@ -60,10 +55,54 @@ public class WorkoutsFragment extends Fragment {
         DateSectionItem(String section) { this.section = section; }
     }
 
+    // --- Вспомогательные методы ---
+    private String formatDistance(double distance) {
+        if (distance < 1.0) {
+            return String.format("%d м", (int)(distance * 1000));
+        } else {
+            return String.format("%.2f км", distance);
+        }
+    }
+    private String formatDuration(long start, long end) {
+        long durationMs = end - start;
+        long minutes = durationMs / 60000;
+        long hours = minutes / 60;
+        minutes = minutes % 60;
+        if (hours > 0) return hours + " ч " + minutes + " минут";
+        else return minutes + " минут";
+    }
+    private String getTypeNameRu(ActivityEntity.ActivityType type) {
+        switch (type) {
+            case BIKE: return "Велосипед 🚴";
+            case RUN: return "Бег 🏃";
+            case WALK: return "Шаг 🚶";
+            default: return type.toString();
+        }
+    }
+    private String formatDate(long time) {
+        long now = System.currentTimeMillis();
+        long diff = now - time;
+        long hours = diff / (1000 * 60 * 60);
+        if (hours < 24) {
+            return hours + " часов назад";
+        } else {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd.MM.yyyy");
+            return sdf.format(new java.util.Date(time));
+        }
+    }
+
     // --- Адаптер ---
     class ActivityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-        List<ActivityListItem> items;
+        private List<ActivityListItem> items;
         ActivityAdapter(List<ActivityListItem> items) { this.items = items; }
+        public void setItems(List<ActivityEntity> newEntities) {
+            List<ActivityListItem> newItems = new ArrayList<>();
+            for (ActivityEntity entity : newEntities) {
+                newItems.add(entity);
+            }
+            this.items = newItems;
+            notifyDataSetChanged();
+        }
 
         @Override
         public int getItemViewType(int position) {
@@ -88,22 +127,26 @@ public class WorkoutsFragment extends Fragment {
             if (holder instanceof SectionViewHolder) {
                 ((SectionViewHolder) holder).tvSection.setText(((DateSectionItem) items.get(position)).section);
             } else if (holder instanceof ActivityViewHolder) {
-                ActivityItem item = (ActivityItem) items.get(position);
+                ActivityEntity item = (ActivityEntity) items.get(position);
                 ActivityViewHolder vh = (ActivityViewHolder) holder;
-                vh.tvDistance.setText(item.distance);
-                vh.tvDuration.setText(item.duration);
-                vh.tvType.setText(item.type);
-                vh.tvDate.setText(item.date);
+                String distanceStr = formatDistance(item.distance);
+                String duration = formatDuration(item.startTime, item.endTime);
+                String typeRu = getTypeNameRu(item.type);
+                String dateStr = formatDate(item.startTime);
+                vh.tvDistance.setText(distanceStr);
+                vh.tvDuration.setText(duration);
+                vh.tvType.setText(typeRu);
+                vh.tvDate.setText(dateStr);
                 vh.itemView.setOnClickListener(v -> {
                     Intent intent = new Intent(requireContext(), ActivityDetailsActivity.class);
-                    intent.putExtra("distance", item.distance);
-                    intent.putExtra("duration", item.duration);
-                    intent.putExtra("type", item.type);
-                    intent.putExtra("date", item.date);
+                    intent.putExtra("distance", distanceStr);
+                    intent.putExtra("duration", duration);
+                    intent.putExtra("type", typeRu);
+                    intent.putExtra("date", dateStr);
                     intent.putExtra("user", "");
                     intent.putExtra("description", "");
-                    intent.putExtra("start", "");
-                    intent.putExtra("finish", "");
+                    intent.putExtra("start", item.startTime);
+                    intent.putExtra("finish", item.endTime);
                     intent.putExtra("comment", "");
                     startActivity(intent);
                 });

@@ -33,7 +33,6 @@ public class UsersFragment extends Fragment {
         // Пример данных
         List<ActivityListItem> items = new ArrayList<>();
         items.add(new DateSectionItem("Вчера"));
-        items.add(new ActivityItem("14.32 км", "2 часа 46 минут", "Серфинг", "14 часов назад", "@van_darkholme", null));
         items.add(new ActivityItem("228 м", "14 часов 48 минут", "Качели", "14 часов назад", "@techniquepasha", null));
         items.add(new ActivityItem("10 км", "1 час 10 минут", "Езда на кадилак", "14 часов назад", "@morgen_shtern", "Езда на кадилак"));
         items.add(new DateSectionItem("Май 2022 года"));
